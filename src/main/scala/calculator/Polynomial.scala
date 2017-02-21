@@ -1,4 +1,5 @@
 package calculator
+import math._
 
 object Polynomial {
   def computeDelta(a: Signal[Double], b: Signal[Double],
@@ -12,11 +13,11 @@ object Polynomial {
       if(delta() < 0) {
         Set()
       } else if(delta() == 0) {
-        Set(- b() / (2 * a()))
+        Set(-b() / (2 * a()))
       }
       else {
-        val sol1 = (- b() + delta()) / (2 * a())
-        val sol2 = (- b() - delta()) / (2 * a())
+        val sol1 = (-b() + sqrt(delta())) / (2 * a())
+        val sol2 = (-b() - sqrt(delta())) / (2 * a())
         Set(sol1, sol2)
       }
     )
