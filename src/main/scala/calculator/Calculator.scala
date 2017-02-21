@@ -24,8 +24,11 @@ object Calculator {
       case Divide(a, b) => eval(a, references) / eval(b, references)
       case Literal(v) => v
       case Ref(name) => {
-        val ref = getReferenceExpr(name, references)
-        if(ref == Ref(name)) Double.NaN else eval(ref, references)
+        try {
+           eval(getReferenceExpr(name, references), references)
+        } catch {
+          case e: Throwable => Double.NaN
+        }
       }
     }
   }
