@@ -13,22 +13,19 @@ object Calculator {
       namedExpressions: Map[String, Signal[Expr]]): Map[String, Signal[Double]] = {
     for{
       (name, expr) <- namedExpressions
-    } yield (name, Signal(eval(expr(), namedExpressions)))
+    } yield (name, Signal(eval(expr(), namedExpressions, Nil)))
   }
 
-  def eval(expr: Expr, references: Map[String, Signal[Expr]]): Double = {
+  def eval(expr: Expr, references: Map[String, Signal[Expr]], exploredRefs: List[String]): Double = {
     expr match {
-      case Plus(a, b) => eval(a, references) + eval(b, references)
-      case Minus(a, b) => eval(a, references) - eval(b, references)
-      case Times(a, b) => eval(a, references) * eval(b, references)
-      case Divide(a, b) => eval(a, references) / eval(b, references)
+      case Plus(a, b) => eval(a, references, exploredRefs) + eval(b, references, exploredRefs)
+      case Minus(a, b) => eval(a, references, exploredRefs) - eval(b, references, exploredRefs)
+      case Times(a, b) => eval(a, references, exploredRefs) * eval(b, references, exploredRefs)
+      case Divide(a, b) => eval(a, references, exploredRefs) / eval(b, references, exploredRefs)
       case Literal(v) => v
-      case Ref(name) => {
-        try {
-           eval(getReferenceExpr(name, references), references)
-        } catch {
-          case e: Throwable => Double.NaN
-        }
+      case Ref(name) =>  {
+        if(exploredRefs.contains(name)) Double.NaN
+        else eval(getReferenceExpr(name, references), references, name::exploredRefs)
       }
     }
   }
