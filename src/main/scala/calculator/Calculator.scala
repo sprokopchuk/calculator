@@ -22,8 +22,11 @@ object Calculator {
       case Minus(a, b) => eval(a, references) - eval(b, references)
       case Times(a, b) => eval(a, references) * eval(b, references)
       case Divide(a, b) => eval(a, references) / eval(b, references)
-      case Ref(name) => eval(getReferenceExpr(name, references), references)
       case Literal(v) => v
+      case Ref(name) => {
+        val ref = getReferenceExpr(name, references)
+        if(ref == Ref(name)) Double.NaN else eval(ref, references)
+      }
     }
   }
 
